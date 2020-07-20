@@ -82,7 +82,7 @@ add_filter('admin_comment_types_dropdown', function($comment_types) {
 add_action('parse_comment_query', function($comment_query) {
 	if(is_singular()) {
 		if(isset($comment_query->query_vars['parent']) && $comment_query->query_vars['parent'] == 0) {
-			$comment_query->query_vars['type']	= 'comment';
+			$comment_query->query_vars['type']	= array('','comment');
 		}	
 	}
 });
@@ -94,7 +94,12 @@ if( wp_miniprogram_option("we_submit") ) {
 	},11,1);
 }
 function we_miniprogram_posts_submit_pages( $post_id ) {
-	return apply_filters( 'mp_we_submit_pages', $post_id );
+	$submit = array( );
+	$submit['wechat'] = apply_filters( 'mp_we_submit_pages', $post_id );
+	if (wp_miniprogram_option('bd_appkey') && wp_miniprogram_option('bd_secret')) {
+		$submit['baidu'] = apply_filters( 'mp_bd_submit_pages', $post_id );
+	}
+	return $submit;
 }
 
 add_filter('miniprogram_prefix_thumbnail', function($post_id) {
